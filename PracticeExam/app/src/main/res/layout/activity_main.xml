@@ -13,10 +13,11 @@
         android:layout_marginTop="52dp"
         android:height="50dp"
         android:fontFamily="sans-serif"
-        android:text="@string/student_management"
+        android:text="@string/employee_management"
         android:textAlignment="center"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:textStyle="bold"
+        android:textColor="#3D85C6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,17 +49,44 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_id" />
 
+    <EditText
+        android:id="@+id/item_hireDate"
+        android:layout_width="280dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="36dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/hireDates"
+        android:inputType="date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_fullname" />
+
+    <EditText
+        android:id="@+id/item_salary"
+        android:layout_width="280dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/salary"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_hireDate" />
+
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="@string/add"
-        android:onClick="addStudent"
+        android:onClick="addEmployee"
+        android:backgroundTint="#517A93"
         app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_average_score"
+        app:layout_constraintTop_toBottomOf="@+id/item_salary"
         tools:ignore="UsingOnClickInXml" />
 
     <Button
@@ -67,11 +95,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="@string/update"
-        android:onClick="updateStudent"
+        android:onClick="updateEmployee"
+        android:backgroundTint="#517A93"
         app:layout_constraintEnd_toStartOf="@+id/btnDelete"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnAdd"
-        app:layout_constraintTop_toBottomOf="@+id/item_average_score" />
+        app:layout_constraintTop_toBottomOf="@+id/item_salary" />
 
     <Button
         android:id="@+id/btnDelete"
@@ -79,11 +108,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="@string/delete"
-        android:onClick="deleteStudent"
+        android:onClick="deleteEmployee"
+        android:backgroundTint="#517A93"
         app:layout_constraintEnd_toStartOf="@+id/btnList"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnUpdate"
-        app:layout_constraintTop_toBottomOf="@+id/item_average_score" />
+        app:layout_constraintTop_toBottomOf="@+id/item_salary" />
 
     <Button
         android:id="@+id/btnList"
@@ -91,37 +121,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="@string/list"
-        android:onClick="searchStudents"
+        android:onClick="searchEmployees"
+        android:backgroundTint="#517A93"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnDelete"
-        app:layout_constraintTop_toBottomOf="@+id/item_average_score" />
-
-    <EditText
-        android:id="@+id/item_birthday"
-        android:layout_width="280dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="36dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/birthdays"
-        android:inputType="date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_fullname" />
-
-    <EditText
-        android:id="@+id/item_average_score"
-        android:layout_width="280dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="30dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/average_score"
-        android:inputType="numberDecimal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_birthday" />
+        app:layout_constraintTop_toBottomOf="@+id/item_salary" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

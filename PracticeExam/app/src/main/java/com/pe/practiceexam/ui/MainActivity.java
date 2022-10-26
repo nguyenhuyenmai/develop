@@ -1,3 +1,8 @@
+/**
+ * @author: LinhDQHE140751
+ *
+ * 2022-10-15 LinhDQ(FPT) [Ass_No15] Practice Example - Employee2
+ */
 package com.pe.practiceexam.ui;
 
 import androidx.annotation.NonNull;
@@ -15,9 +20,9 @@ import android.widget.Toast;
 
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.pe.practiceexam.R;
-import com.pe.practiceexam.db.Student;
-import com.pe.practiceexam.db.StudentAdapter;
-import com.pe.practiceexam.db.StudentDatabase;
+import com.pe.practiceexam.db.Employee;
+import com.pe.practiceexam.db.EmployeeAdapter;
+import com.pe.practiceexam.db.EmployeeDatabase;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,12 +31,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private StudentDatabase database;
-    private StudentAdapter studentAdapter;
-    private List<Student> studentList = new ArrayList<>();
-    TextView id, fullname, birthday, average_score;
-    RecyclerView recyclerView;
+    private EmployeeDatabase database;          // database
+    private EmployeeAdapter employeeAdapter;    // adapter
+    private List<Employee> employeeList = new ArrayList<>();    // employee list
+    TextView id, fullname, hireDate, salary;    // employee information: id, fullname, hireDate, salary
+    RecyclerView recyclerView;                  // employee management view
 
+    /**
+     * create employee management activity
+     *
+     * @param savedInstanceState
+     */
     @SuppressLint({"WrongViewCast", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,32 +50,263 @@ public class MainActivity extends AppCompatActivity {
 
         id = findViewById(R.id.item_id);
         fullname = findViewById(R.id.item_fullname);
-        birthday = findViewById(R.id.item_birthday);
-        average_score = findViewById(R.id.item_average_score);
+        hireDate = findViewById(R.id.item_hireDate);
+        salary = findViewById(R.id.item_salary);
         recyclerView = findViewById(R.id.recyclerView);
 
-        database = StudentDatabase.getInstance(this);
-        studentList = database.studentDAO().getAllStudents();
+        database = EmployeeDatabase.getInstance(this);
+        employeeList = database.employeeDAO().getAllEmployees();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        studentAdapter = new StudentAdapter(MainActivity.this, studentList);
-        recyclerView.setAdapter(studentAdapter);
-
+        employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
+        recyclerView.setAdapter(employeeAdapter);
     }
 
-    private boolean BooleanStudentExist(Student student){
-        studentList.addAll(database.studentDAO().getAllStudents());
-        for (Student s : studentList) {
-            if (s.getId() == student.getId()) {
+    /**
+     * add employee
+     *
+     * @param view
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void addEmployee(View view) {
+        if (!ValidInputEmployee()) {
+            return;
+        }
+        int employeeId = Integer.parseInt(id.getText().toString().trim());
+        String employeeName = fullname.getText().toString().trim();
+        String employeeHireDate = hireDate.getText().toString().trim();
+        double employeeSalary = Double.parseDouble(salary.getText().toString().trim());
+
+        Employee employee = new Employee(employeeId, employeeName, employeeHireDate, employeeSalary);
+
+            database.employeeDAO().insertEmployee(employee);
+            employeeList.clear();
+            employeeList.addAll(database.employeeDAO().getAllEmployees());
+            employeeAdapter.notifyDataSetChanged();
+
+            id.setText("");
+            fullname.setText("");
+            hireDate.setText("");
+            salary.setText("");
+        if (!checkEmployeeExist(employee)) {
+            Toast.makeText(MainActivity.this, "Add Successful", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * update employee
+     *
+     * @param view
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateEmployee(View view) {
+        if (!ValidInputEmployee()) {
+            return;
+        }
+        int employeeId = Integer.parseInt(id.getText().toString().trim());
+        String employeeName = fullname.getText().toString().trim();
+        String employeeHireDate = hireDate.getText().toString().trim();
+        double employeeSalary = Double.parseDouble(salary.getText().toString().trim());
+
+        Employee employee = new Employee(employeeId, employeeName, employeeHireDate, employeeSalary);
+        // if ID exists -> update
+        if (checkEmployeeExist(employee)) {
+            //update employee
+            database.employeeDAO().updateEmployee(employeeId, employeeName, employeeHireDate, employeeSalary);
+            Toast.makeText(MainActivity.this, "Update Successful", Toast.LENGTH_LONG).show();
+            employeeList.clear();
+            employeeList.addAll(database.employeeDAO().getAllEmployees());
+            employeeAdapter.notifyDataSetChanged();
+
+            id.setText("");
+            fullname.setText("");
+            hireDate.setText("");
+            salary.setText("");
+        } else {
+            Toast.makeText(MainActivity.this, "Employee ID not exist.", Toast.LENGTH_LONG).show();
+            employeeList.clear();
+            employeeList.addAll(database.employeeDAO().getAllEmployees());
+            employeeAdapter.notifyDataSetChanged();
+
+            id.setText("");
+            fullname.setText("");
+            hireDate.setText("");
+            salary.setText("");
+        }
+    }
+
+    /**
+     * delete employee
+     *
+     * @param view
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void deleteEmployee(View view) {
+        if (!ValidInputEmployee()) {
+            return;
+        }
+        int employeeId = Integer.parseInt(id.getText().toString().trim());
+        String employeeName = fullname.getText().toString().trim();
+        String employeeHireDate = hireDate.getText().toString().trim();
+        double employeeSalary = Double.parseDouble(salary.getText().toString().trim());
+
+        Employee employee = new Employee(employeeId, employeeName, employeeHireDate, employeeSalary);
+
+        // if ID exists -> delete
+        if (checkEmployeeExist(employee)) {
+            // delete employee
+            database.employeeDAO().deleteEmployee(employee);
+            Toast.makeText(MainActivity.this, "Delete Successful", Toast.LENGTH_LONG).show();
+            employeeList.clear();
+            employeeList.addAll(database.employeeDAO().getAllEmployees());
+            employeeAdapter.notifyDataSetChanged();
+
+            id.setText("");
+            fullname.setText("");
+            hireDate.setText("");
+            salary.setText("");
+        } else {
+            Toast.makeText(MainActivity.this, "Employee ID not exist.", Toast.LENGTH_LONG).show();
+            employeeList.clear();
+            employeeList.addAll(database.employeeDAO().getAllEmployees());
+            employeeAdapter.notifyDataSetChanged();
+
+            id.setText("");
+            fullname.setText("");
+            hireDate.setText("");
+            salary.setText("");
+        }
+    }
+
+    /**
+     * search employees
+     *
+     * @param view
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void searchEmployees(View view) {
+        // if id and name empty -> search all employees
+        if (!ValidInputSearch()) {
+            employeeList.clear();
+            employeeList = database.employeeDAO().getAllEmployees();
+            employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
+            recyclerView.setAdapter(employeeAdapter);
+            return;
+        }
+
+        int employeeId = 0;
+        try {
+            employeeId = Integer.parseInt(id.getText().toString().trim());
+        } catch (NumberFormatException exception) {
+            id.setError("id must be integer", null);
+            return;
+        }
+        String employeeName = fullname.getText().toString().trim();
+
+        // search employees by ID
+        if (employeeName.equals("")) {
+            employeeList = database.employeeDAO().searchEmployeeById(employeeId);
+            employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
+            recyclerView.setAdapter(employeeAdapter);
+            return;
+            // search employees by ID or Name
+        } else {
+            employeeList = database.employeeDAO().searchEmployeeByIdOrName(employeeId, employeeName);
+            employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
+            recyclerView.setAdapter(employeeAdapter);
+        }
+    }
+
+    /**
+     * check employee input
+     *
+     * @return
+     */
+    private Boolean ValidInputEmployee() {
+        String employeeId = id.getText().toString().trim();
+        String employeeName = fullname.getText().toString().trim();
+        String employeeHireDate = hireDate.getText().toString().trim();
+        String employeeSalary = salary.getText().toString().trim();
+
+        // if ID empty -> error
+        if (employeeId.equals("")) {
+            id.setError("Enter employeeID", null);
+        }
+        // if name empty -> error
+        if (employeeName.equals("")) {
+            fullname.setError("Enter employee's name", null);
+        }
+        // if hireDate empty -> error
+        if (employeeHireDate.equals("")) {
+            hireDate.setError("Enter employee's hireDate (dd/mm/yyyy)", null);
+        }
+        // if salary empty -> error
+        if (employeeSalary.equals("")) {
+            salary.setError("Enter employee's salary", null);
+        }
+        // if empty -> false
+        if (employeeId.equals("") || employeeName.equals("") || employeeHireDate.equals("") || employeeSalary.equals("")) {
+            return false;
+        }
+        try {
+            int idCheck = Integer.parseInt(employeeId);
+        } catch (NumberFormatException exception) {
+            id.setError("ID must be integer");
+            return false;
+        }
+        // if hireDate wrong format (dd/MM/yyyy) -> false
+        if (!validHireDate(employeeHireDate)) {
+            hireDate.setError("Please enter hireDate (dd/MM/yyyy)");
+            return false;
+        }
+        // if salary <= 0 -> false
+        if (employeeSalary.equals(".") || (!employeeSalary.equals("") && Double.parseDouble(employeeSalary) <= 0.0)) {
+            salary.setError("Salary must be double and salary > 0");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * check input search
+     *
+     * @return
+     */
+    private Boolean ValidInputSearch() {
+        String employeeId = id.getText().toString().trim();
+        String employeeName = fullname.getText().toString().trim();
+        if (employeeId.equals("") && employeeName.equals("")) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check employee exist
+     *
+     * @param employee
+     * @return existed: true / new: false
+     */
+    private boolean checkEmployeeExist(Employee employee) {
+        employeeList.addAll(database.employeeDAO().getAllEmployees());
+        for (Employee e : employeeList) {
+            // if employee ID exists
+            if (e.getId() == employee.getId()) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean isValidDate(String input) {
+    /**
+     * check date format (dd/MM/yyyy)
+     *
+     * @param input
+     * @return true: (dd/MM/yyyy) / false: else
+     */
+    private static boolean validHireDate(String input) {
         String formatString = "dd/MM/yyyy";
-
         try {
             SimpleDateFormat format = new SimpleDateFormat(formatString);
             format.setLenient(false);
@@ -73,185 +314,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException | IllegalArgumentException e) {
             return false;
         }
-
         return true;
-    }
-
-    private String ValidInputstudent(){
-        String message = "1";
-
-        String sId = id.getText().toString().trim();
-        String sFullName = fullname.getText().toString().trim();
-        String sBirthday = birthday.getText().toString().trim();
-        String sAverageScore = average_score.getText().toString().trim();
-
-        if(sId.equals("")){
-            id.setError("Enter id number.", null);
-        }
-        if(sFullName.equals("")){
-            fullname.setError("Enter fullname.", null);
-        }
-
-        if(sBirthday.equals("")){
-            birthday.setError("Enter birthday **/**/****", null);
-        }
-
-        if(sAverageScore.equals("")){
-            average_score.setError("Enter score.", null);
-        }
-
-        if(!isValidDate(sBirthday)) {
-            birthday.setError("Date not exist.", null);
-            return "";
-        }
-
-        if(!sAverageScore.equals("")){
-            float fAverageScore = Float.parseFloat(sAverageScore);
-            if(fAverageScore > 10 || fAverageScore < 0){
-                average_score.setError("Average score from 0 to 10.", null);
-                return "";
-            }
-        }
-
-        if(sId.equals("") && sFullName.equals("") && sBirthday.equals("") && sAverageScore.equals("")){
-            return "";
-        }
-        return message;
-    }
-
-    private String ValidInputSearch(){
-        String message = "1";
-        String sId = id.getText().toString().trim();
-        String sFullName = fullname.getText().toString().trim();
-
-        if(sId.equals("") && sFullName.equals("")){
-            return "";
-        }
-        return message;
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void addStudent(View view) {
-        if (ValidInputstudent().equals("")){
-            return;
-        }
-        int sId= Integer.parseInt(id.getText().toString().trim());
-        String sFullName = fullname.getText().toString().trim();
-        String sBirthday = birthday.getText().toString().trim();
-        float sAverageScore = Float.parseFloat(average_score.getText().toString().trim());
-
-        Student addStudent = new Student(sId, sFullName, sBirthday, sAverageScore);
-
-        database.studentDAO().insertStudent(addStudent);
-        studentList.clear();
-        studentList.addAll(database.studentDAO().getAllStudents());
-        studentAdapter.notifyDataSetChanged();
-
-        id.setText("");
-        fullname.setText("");
-        birthday.setText("");
-        average_score.setText("");
-    }
-
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void deleteStudent(View view) {
-        if (ValidInputstudent().equals("")){
-            return;
-        }
-        int sId= Integer.parseInt(id.getText().toString().trim());
-        String sFullName = fullname.getText().toString().trim();
-        String sBirthday = birthday.getText().toString().trim();
-        float fAverageScore = Float.parseFloat(average_score.getText().toString().trim());
-
-        Student student = new Student(sId, sFullName, sBirthday, fAverageScore);
-
-        if(BooleanStudentExist(student)){
-            database.studentDAO().deleteStudent(student);
-            studentList.clear();
-            studentList.addAll(database.studentDAO().getAllStudents());
-            studentAdapter.notifyDataSetChanged();
-
-            id.setText("");
-            fullname.setText("");
-            birthday.setText("");
-            average_score.setText("");
-        }else {
-            Toast.makeText(MainActivity.this,"ID not exist, to delete", Toast.LENGTH_LONG).show();
-            studentList.clear();
-            studentList.addAll(database.studentDAO().getAllStudents());
-            studentAdapter.notifyDataSetChanged();
-
-            id.setText("");
-            fullname.setText("");
-            birthday.setText("");
-            average_score.setText("");
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateStudent(View view) {
-        if (ValidInputstudent().equals("")){
-            return;
-        }
-        int sId= Integer.parseInt(id.getText().toString().trim());
-        String sFullName = fullname.getText().toString().trim();
-        String sBirthday = birthday.getText().toString().trim();
-        float fAverageScore = Float.parseFloat(average_score.getText().toString().trim());
-
-        Student student = new Student(sId, sFullName, sBirthday, fAverageScore);
-
-        if(BooleanStudentExist(student)){
-            database.studentDAO().updateStudent(sId, sFullName, sBirthday, fAverageScore);
-            studentList.clear();
-            studentList.addAll(database.studentDAO().getAllStudents());
-            studentAdapter.notifyDataSetChanged();
-
-            id.setText("");
-            fullname.setText("");
-            birthday.setText("");
-            average_score.setText("");
-        }else {
-            Toast.makeText(MainActivity.this,"ID not exist.", Toast.LENGTH_LONG).show();
-
-            studentList.clear();
-            studentList.addAll(database.studentDAO().getAllStudents());
-            studentAdapter.notifyDataSetChanged();
-
-            id.setText("");
-            fullname.setText("");
-            birthday.setText("");
-            average_score.setText("");
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void searchStudents(View view) {
-        if (ValidInputSearch().equals("")) {
-            studentList.clear();
-            studentList = database.studentDAO().getAllStudents();
-            studentAdapter = new StudentAdapter(MainActivity.this, studentList);
-            recyclerView.setAdapter(studentAdapter);
-            return;
-        }
-
-        int iId = 0;
-        try {
-            iId = Integer.parseInt(id.getText().toString().trim());
-        } catch (Exception exception) {
-            iId = -1;
-        }
-        String sFullName = fullname.getText().toString().trim();
-
-        if(sFullName.equals("")){
-            studentList = database.studentDAO().searchStudentID(iId);
-            studentAdapter = new StudentAdapter(MainActivity.this, studentList);
-            recyclerView.setAdapter(studentAdapter);
-            return;
-        }
-        studentList = database.studentDAO().searchStudentsIDandName(iId, sFullName);
-        studentAdapter = new StudentAdapter(MainActivity.this, studentList);
-        recyclerView.setAdapter(studentAdapter);
-
     }
 }

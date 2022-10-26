@@ -1,13 +1,22 @@
 <resources>
+<!--    app name    -->
     <string name="app_name">Practice Exam</string>
-    <string name="student_management">Student management</string>
-    <string name="fullname">fullname</string>
-    <string name="average_score">average score</string>
-    <string name="update">UPDATE</string>
+
+<!--    title    -->
+    <string name="employee_management">Employee Management</string>
+
+<!--    input    -->
+    <string name="id">Employee ID</string>
+    <string name="fullname">Employee Name</string>
+    <string name="hireDates">Hire Date</string>
+    <string name="salary">Employee Salary</string>
+
+<!--    action    -->
     <string name="add">ADD</string>
+    <string name="update">UPDATE</string>
     <string name="delete">DELETE</string>
     <string name="list">LIST</string>
+
+<!--    show result    -->
     <string name="result">Result</string>
-    <string name="id">id</string>
-    <string name="birthdays">birthday</string>
 </resources>
