@@ -79,18 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
         Employee employee = new Employee(employeeId, employeeName, employeeHireDate, employeeSalary);
 
-            database.employeeDAO().insertEmployee(employee);
-            employeeList.clear();
-            employeeList.addAll(database.employeeDAO().getAllEmployees());
-            employeeAdapter.notifyDataSetChanged();
+        database.employeeDAO().insertEmployee(employee);
+        Toast.makeText(MainActivity.this, "Add Successful", Toast.LENGTH_LONG).show();
+        employeeList.clear();
+        employeeList.addAll(database.employeeDAO().getAllEmployees());
+        employeeAdapter.notifyDataSetChanged();
 
-            id.setText("");
-            fullname.setText("");
-            hireDate.setText("");
-            salary.setText("");
-        if (!checkEmployeeExist(employee)) {
-            Toast.makeText(MainActivity.this, "Add Successful", Toast.LENGTH_LONG).show();
-        }
+        id.setText("");
+        fullname.setText("");
+        hireDate.setText("");
+        salary.setText("");
     }
 
     /**
@@ -194,24 +192,18 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        int employeeId = 0;
-        try {
-            employeeId = Integer.parseInt(id.getText().toString().trim());
-        } catch (NumberFormatException exception) {
-            id.setError("id must be integer", null);
-            return;
-        }
         String employeeName = fullname.getText().toString().trim();
+        String employeeIdSearch = id.getText().toString().trim();
 
         // search employees by ID
         if (employeeName.equals("")) {
-            employeeList = database.employeeDAO().searchEmployeeById(employeeId);
+            employeeList = database.employeeDAO().searchEmployeeById(employeeIdSearch);
             employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
             recyclerView.setAdapter(employeeAdapter);
             return;
             // search employees by ID or Name
         } else {
-            employeeList = database.employeeDAO().searchEmployeeByIdOrName(employeeId, employeeName);
+            employeeList = database.employeeDAO().searchEmployeeByIdOrName(employeeIdSearch, employeeName);
             employeeAdapter = new EmployeeAdapter(MainActivity.this, employeeList);
             recyclerView.setAdapter(employeeAdapter);
         }
@@ -289,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
      * @return existed: true / new: false
      */
     private boolean checkEmployeeExist(Employee employee) {
+        employeeList.clear();
         employeeList.addAll(database.employeeDAO().getAllEmployees());
         for (Employee e : employeeList) {
             // if employee ID exists
